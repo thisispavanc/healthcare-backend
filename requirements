@@ -1,0 +1,222 @@
+I want you to generate a complete backend for my application.
+
+# ------------------------------------------------------
+# 📌 Project Overview
+# ------------------------------------------------------
+I am building a healthcare-style application for a company called "PAA".  
+The backend will manage patient data and related medical records using a PostgreSQL database.
+
+Use **Express.js** as the backend framework.
+
+# ------------------------------------------------------
+# 📌 Tech Stack Requirements
+# ------------------------------------------------------
+- Backend Framework: Express.js
+- Database: PostgreSQL
+- Query Layer: Use an ORM/Query Builder of your choice (Prisma OR Sequelize OR Knex)
+- Authentication: JWT-based auth (Access + Refresh tokens)
+- Password Hashing: bcrypt
+- Environment Management: dotenv
+- Validation: joi or zod
+- Logging: winston or pino
+- Error Handling: Centralized Express middleware
+- CORS Enabled
+- Folder Structure: MVC or services/controller pattern (your choice)
+- Migrations: Use the tool that matches your ORM
+
+# ------------------------------------------------------
+# 📌 Database Schema (Already Created in PostgreSQL)
+# ------------------------------------------------------
+Use this exact schema to generate types, models, migrations, and queries.
+
+Patients:
+    id UUID PK
+    mrn TEXT UNIQUE
+    first_name TEXT
+    last_name TEXT
+    middle_name TEXT
+    dob DATE
+    gender TEXT
+    phone TEXT
+    email TEXT
+    preferred_language TEXT
+    nationality TEXT
+    national_id TEXT UNIQUE
+    birth_place TEXT
+    notes JSONB
+    created_at TIMESTAMPTZ
+    updated_at TIMESTAMPTZ
+
+Addresses:
+    id UUID PK
+    patient_id UUID FK → patients(id)
+    type TEXT
+    line1 TEXT
+    line2 TEXT
+    city TEXT
+    state TEXT
+    postal_code TEXT
+    country TEXT
+    created_at TIMESTAMPTZ
+
+Contacts:
+    id UUID PK
+    patient_id UUID FK → patients(id)
+    name TEXT
+    relation TEXT
+    phone TEXT
+    email TEXT
+    is_emergency BOOLEAN
+    created_at TIMESTAMPTZ
+
+Insurances:
+    id UUID PK
+    patient_id UUID FK → patients(id)
+    provider TEXT
+    policy_number TEXT
+    group_number TEXT
+    valid_from DATE
+    valid_to DATE
+    details JSONB
+    created_at TIMESTAMPTZ
+
+Visits:
+    id UUID PK
+    patient_id UUID FK → patients(id)
+    encounter_type TEXT
+    facility TEXT
+    provider_id UUID
+    started_at TIMESTAMPTZ
+    ended_at TIMESTAMPTZ
+    reason TEXT
+    diagnosis TEXT
+    notes JSONB
+    created_at TIMESTAMPTZ
+
+Observations:
+    id UUID PK
+    patient_id UUID FK
+    visit_id UUID FK
+    obs_type TEXT
+    obs_timestamp TIMESTAMPTZ
+    value_text TEXT
+    value_json JSONB
+    unit TEXT
+    performer_id UUID
+    created_at TIMESTAMPTZ
+
+Allergies:
+    id UUID PK
+    patient_id UUID FK
+    substance TEXT
+    reaction TEXT
+    severity TEXT
+    recorded_at TIMESTAMPTZ
+    created_at TIMESTAMPTZ
+
+Medications:
+    id UUID PK
+    patient_id UUID FK
+    name TEXT
+    dose TEXT
+    route TEXT
+    frequency TEXT
+    start_date DATE
+    end_date DATE
+    status TEXT
+    notes JSONB
+    created_at TIMESTAMPTZ
+
+Audit Logs:
+    id UUID PK
+    table_name TEXT
+    record_id UUID
+    action TEXT
+    changed_data JSONB
+    performed_by TEXT
+    performed_at TIMESTAMPTZ
+
+# ------------------------------------------------------
+# 📌 Backend Functional Requirements
+# ------------------------------------------------------
+
+## Authentication:
+- User registration (admin-only)
+- Login
+- Logout
+- Refresh token endpoint
+- Middleware for protected routes
+- Role-based access control (admin, clinician, read-only user)
+
+## CRUD Endpoints:
+
+### Patients
+- Create patient
+- List all patients (with pagination + search by name, MRN)
+- Get patient by ID
+- Update patient
+- Delete (soft delete preferred)
+
+### Addresses
+- Add address to patient
+- Get all addresses for patient
+- Update address
+- Delete address
+
+### Contacts
+- Add contact
+- Get contacts
+- Update/delete
+
+### Insurances
+- Add insurance
+- List insurances
+- Update/delete
+
+### Visits
+- Add visit
+- List visits for patient
+- Update visit
+- Delete visit
+
+### Observations
+- Add observation
+- List by patient or visit
+- Update/delete
+
+### Allergies
+- Add allergy
+- List allergies
+- Update/delete
+
+### Medications
+- Add medication
+- List medications
+- Update/delete
+
+### Audit Logs
+- Add audit log automatically on create/update/delete
+- Endpoint to list audit logs (admin only)
+
+# ------------------------------------------------------
+# 📌 Backend Output Requirements
+# ------------------------------------------------------
+Deliver:
+
+✔ package.json with all dependencies  
+✔ src/ folder with controllers, services, routes, models  
+✔ config/ folder (DB, env, JWT, logger)  
+✔ middleware for auth & errors  
+✔ migration files  
+✔ seed scripts (optional)  
+✔ Postman collection (optional)  
+✔ .env.example file  
+✔ Fully working Express.js server with all endpoints  
+
+Provide final code in clean, ready-to-run structure.
+
+# ------------------------------------------------------
+# 📌 Final Goal
+# ------------------------------------------------------
+Return the **complete backend codebase**, including routes, controllers, services, models, configs, middleware, migrations, and setup scripts, following Node.js + Express.js best practices with PostgreSQL.
+

@@ -1,0 +1,497 @@
+{
+  "info": {
+    "_postman_id": "paa-healthcare-api-collection",
+    "name": "PAA Healthcare API",
+    "description": "Healthcare application API endpoints for patient data management",
+    "version": "1.0.0",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{accessToken}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000/api"
+    },
+    {
+      "key": "accessToken",
+      "value": ""
+    },
+    {
+      "key": "refreshToken",
+      "value": ""
+    },
+    {
+      "key": "patientId",
+      "value": "",
+      "description": "Set this after creating a patient"
+    }
+  ],
+  "item": [
+    {
+      "name": "Authentication",
+      "_postman_isSubFolder": true,
+      "item": [
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    pm.collectionVariables.set('accessToken', response.data.accessToken);",
+                  "    pm.collectionVariables.set('refreshToken', pm.cookies.get('refreshToken'));",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"admin\",\n  \"password\": \"Admin123!\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "login"]
+            }
+          }
+        },
+        {
+          "name": "Get Profile",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/auth/profile",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "profile"]
+            }
+          }
+        },
+        {
+          "name": "Refresh Token",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/refresh",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "refresh"]
+            }
+          }
+        },
+        {
+          "name": "Register User (Admin)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"newuser\",\n  \"email\": \"newuser@paa.com\",\n  \"password\": \"NewUser123!\",\n  \"first_name\": \"New\",\n  \"last_name\": \"User\",\n  \"role\": \"clinician\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "register"]
+            }
+          }
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/auth/logout",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "logout"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Patients",
+      "_postman_isSubFolder": true,
+      "item": [
+        {
+          "name": "List Patients",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/patients?page=1&limit=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["patients"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Search Patients",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/patients?search=john",
+              "host": ["{{baseUrl}}"],
+              "path": ["patients"],
+              "query": [
+                {
+                  "key": "search",
+                  "value": "john"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create Patient",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    const response = pm.response.json();",
+                  "    pm.collectionVariables.set('patientId', response.data.id);",
+                  "    console.log('Patient ID saved:', response.data.id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"mrn\": \"MRN-2023-001\",\n  \"first_name\": \"John\",\n  \"last_name\": \"Doe\",\n  \"middle_name\": \"Michael\",\n  \"dob\": \"1985-06-15\",\n  \"gender\": \"male\",\n  \"phone\": \"+1234567890\",\n  \"email\": \"john.doe@email.com\",\n  \"preferred_language\": \"English\",\n  \"nationality\": \"American\",\n  \"national_id\": \"123-45-6789\",\n  \"birth_place\": \"New York, NY\",\n  \"notes\": {\n    \"allergies_note\": \"No known allergies\",\n    \"special_instructions\": \"Prefers morning appointments\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/patients",
+              "host": ["{{baseUrl}}"],
+              "path": ["patients"]
+            }
+          }
+        },
+        {
+          "name": "Get Patient",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/patients/{{patientId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["patients", "{{patientId}}"]
+            }
+          }
+        },
+        {
+          "name": "Get Patient with Details",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/patients/{{patientId}}/details",
+              "host": ["{{baseUrl}}"],
+              "path": ["patients", "{{patientId}}", "details"]
+            }
+          }
+        },
+        {
+          "name": "Update Patient",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"phone\": \"+1987654321\",\n  \"email\": \"john.doe.updated@email.com\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/patients/{{patientId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["patients", "{{patientId}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Addresses",
+      "_postman_isSubFolder": true,
+      "item": [
+        {
+          "name": "Create Address",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"patient_id\": \"{{patientId}}\",\n  \"type\": \"home\",\n  \"line1\": \"123 Main Street\",\n  \"line2\": \"Apt 4B\",\n  \"city\": \"New York\",\n  \"state\": \"NY\",\n  \"postal_code\": \"10001\",\n  \"country\": \"USA\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/addresses",
+              "host": ["{{baseUrl}}"],
+              "path": ["addresses"]
+            }
+          }
+        },
+        {
+          "name": "Get Patient Addresses",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/addresses/patient/{{patientId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["addresses", "patient", "{{patientId}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Visits",
+      "_postman_isSubFolder": true,
+      "item": [
+        {
+          "name": "Get Visits by Patient",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/visits/patient/{{patientId}}?page=1&limit=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["visits", "patient", "{{patientId}}"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create Visit",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"patient_id\": \"{{patientId}}\",\n  \"encounter_type\": \"consultation\",\n  \"facility\": \"PAA Medical Center\",\n  \"provider_id\": \"550e8400-e29b-41d4-a716-446655440000\",\n  \"started_at\": \"2023-12-12T09:00:00Z\",\n  \"ended_at\": \"2023-12-12T10:00:00Z\",\n  \"reason\": \"Annual checkup\",\n  \"diagnosis\": \"Routine examination\",\n  \"notes\": {\n    \"vital_signs\": \"Normal\",\n    \"recommendations\": \"Continue current medication\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/visits",
+              "host": ["{{baseUrl}}"],
+              "path": ["visits"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Medications",
+      "_postman_isSubFolder": true,
+      "item": [
+        {
+          "name": "Get Patient Medications",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/medications/patient/{{patientId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["medications", "patient", "{{patientId}}"]
+            }
+          }
+        },
+        {
+          "name": "Create Medication",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"patient_id\": \"{{patientId}}\",\n  \"name\": \"Lisinopril\",\n  \"dose\": \"10mg\",\n  \"route\": \"oral\",\n  \"frequency\": \"once daily\",\n  \"start_date\": \"2023-12-01\",\n  \"status\": \"active\",\n  \"notes\": {\n    \"instructions\": \"Take with food\",\n    \"side_effects\": \"Monitor for cough\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/medications",
+              "host": ["{{baseUrl}}"],
+              "path": ["medications"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Allergies",
+      "_postman_isSubFolder": true,
+      "item": [
+        {
+          "name": "Get Patient Allergies",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/allergies/patient/{{patientId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["allergies", "patient", "{{patientId}}"]
+            }
+          }
+        },
+        {
+          "name": "Create Allergy",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"patient_id\": \"{{patientId}}\",\n  \"substance\": \"Penicillin\",\n  \"reaction\": \"Rash\",\n  \"severity\": \"moderate\",\n  \"recorded_at\": \"2023-12-12T10:00:00Z\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/allergies",
+              "host": ["{{baseUrl}}"],
+              "path": ["allergies"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Audit Logs (Admin Only)",
+      "_postman_isSubFolder": true,
+      "item": [
+        {
+          "name": "Get All Audit Logs",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/audit?page=1&limit=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["audit"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "20"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Health Check",
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/health",
+          "host": ["{{baseUrl}}"],
+          "path": ["health"]
+        }
+      }
+    },
+    {
+      "name": "API Info",
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/info",
+          "host": ["{{baseUrl}}"],
+          "path": ["info"]
+        }
+      }
+    }
+  ]
+}
